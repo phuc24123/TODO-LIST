@@ -1,0 +1,19 @@
+{
+  "todos": [
+    {
+      "id": "1",
+      "title": "Học React ",
+      "completed": false
+    },
+    {
+      "id": "2",
+      "title": "Dùng JSON Server",
+      "completed": true
+    },
+    {
+      "id": "3",
+      "title": "Học Tailwind CSS ",
+      "completed": false
+    }
+  ]
+}

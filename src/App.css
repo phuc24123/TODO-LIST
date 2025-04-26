@@ -1,0 +1,146 @@
+/* File: src/App.css */
+body, html, #root {
+  height: 100%;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: #5784e2; /* Nền  xanh dương */
+}
+
+.app {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.todo-container {
+  background: #16213E; /* Container tối xanh navy */
+  padding: 30px;
+  border-radius: 15px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(81, 173, 225, 0.1); /* Viền mờ màu chủ đạo */
+}
+
+.todo-container:hover {
+  transform: scale(1.02);
+  box-shadow: 0 10px 40px rgba(81, 173, 225, 0.2);
+}
+
+.todo-container h1 {
+  color: #E6F1FF; /* Chữ trắng xanh nhạt */
+  margin-bottom: 20px;
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+.form-add-task {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.form-add-task input {
+  flex: 1;
+  padding: 14px 20px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  background: #0F3460; /* Ô input tối hơn container */
+  color: #E6F1FF;
+}
+
+.form-add-task input::placeholder {
+  color: #7F8C8D;
+}
+
+.form-add-task input:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(81, 173, 225, 0.3);
+}
+
+.form-add-task button {
+  background-color: #51ADE1; /* Giữ màu chủ đạo */
+  border: none;
+  padding: 0 25px;
+  color: #1A1A2E; /* Chữ tối để nổi bật */
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.form-add-task button:hover {
+  background-color: #3A8BC8;
+  transform: translateY(-2px);
+}
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.task-item {
+  background: #0F3460; /* Nền task tối */
+  color: #E6F1FF;
+  padding: 16px 20px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-left: 4px solid #51ADE1; /* Thanh accent màu chủ đạo */
+  transition: all 0.2s ease;
+}
+
+.task-item:hover {
+  transform: translateX(5px);
+  background: #1A3A6E; /* Màu hover tối hơn */
+}
+
+.task-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.task-actions button {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #E6F1FF;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.task-actions button:hover {
+  background: rgba(81, 173, 225, 0.2);
+  color: #51ADE1;
+}
+
+.edit-btn:hover {
+  color: #2ECC71 !important; /* Xanh lá neon */
+}
+
+.delete-btn:hover {
+  color: #FF5E5B !important; /* Đỏ cam tươi */
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .todo-container {
+    padding: 20px;
+    margin: 0 15px;
+  }
+}
