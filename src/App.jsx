@@ -1,41 +1,34 @@
 /**
  * ỨNG DỤNG TODO LIST SỬ DỤNG REACT VÀ JSON SERVER
- * Chức năng chính: Thêm, sửa, xóa công việc với dữ liệu được lưu trữ trên JSON Server
+ * Tích hợp React Router cho đa trang
+ * Chức năng: Thêm, sửa, xóa, đánh dấu hoàn thành công việc với dữ liệu lưu trên JSON Server
  */
 
 import { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, NavLink } from 'react-router-dom';
 import './App.css';
 
-function App() {
-  // STATE MANAGEMENT
-  const [tasks, setTasks] = useState([]); // Danh sách công việc
-  const [newTask, setNewTask] = useState(''); // Nội dung task mới
-  const [editingTask, setEditingTask] = useState(null); // Task đang được chỉnh sửa
+// Component TodoList: Trang chính hiển thị danh sách công việc
+function TodoList() {
+  const [tasks, setTasks] = useState([]);
+  const [newTask, setNewTask] = useState('');
+  const [editingTask, setEditingTask] = useState(null);
+  const [error, setError] = useState(null);
 
-  // ========================
-  // API HANDLERS
-  // ========================
-
-  /**
-   * Lấy danh sách tasks từ server
-   * Gọi tự động khi component được mount (useEffect)
-   */
+  // Lấy danh sách công việc từ API
   const fetchTasks = async () => {
     try {
       const response = await fetch('http://localhost:3001/todos');
+      if (!response.ok) throw new Error('Không thể kết nối tới JSON Server');
       const data = await response.json();
       setTasks(data);
+      setError(null);
     } catch (error) {
-      console.error('Lỗi khi tải tasks:', error);
+      setError('Không thể tải danh sách công việc. Vui lòng kiểm tra JSON Server.');
     }
   };
 
-  /**
-   * Thêm task mới
-   * - Kiểm tra nội dung không rỗng
-   * - Gửi POST request đến server
-   * - Cập nhật UI sau khi thành công
-   */
+  // Thêm công việc mới
   const handleAddTask = async () => {
     if (!newTask.trim()) return;
 
@@ -43,47 +36,31 @@ function App() {
       const response = await fetch('http://localhost:3001/todos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: newTask,
-          completed: false
-        }),
+        body: JSON.stringify({ title: newTask, completed: false }),
       });
-      
-      await response.json();
-      fetchTasks(); // Refresh danh sách
-      setNewTask(''); // Reset input
+      if (!response.ok) throw new Error('Không thể thêm công việc');
+      const newTaskData = await response.json();
+      setTasks([...tasks, newTaskData]);
+      setNewTask('');
+      setError(null);
     } catch (error) {
-      console.error('Lỗi khi thêm task:', error);
+      setError('Không thể thêm công việc. Vui lòng thử lại.');
     }
   };
 
-  /**
-   * Xóa task
-   * @param {number} id - ID của task cần xóa
-   */
+  // Xóa công việc
   const handleDeleteTask = async (id) => {
     try {
-      await fetch(`http://localhost:3001/todos/${id}`, {
-        method: 'DELETE',
-      });
-      fetchTasks(); // Refresh danh sách
+      const response = await fetch(`http://localhost:3001/todos/${id}`, { method: 'DELETE' });
+      if (!response.ok) throw new Error('Không thể xóa công việc');
+      setTasks(tasks.filter(task => task.id !== id));
+      setError(null);
     } catch (error) {
-      console.error('Lỗi khi xóa task:', error);
+      setError('Không thể xóa công việc. Vui lòng thử lại.');
     }
   };
 
-  /**
-   * Bắt đầu chỉnh sửa task
-   * @param {object} task - Task object cần chỉnh sửa
-   */
-  const handleEditTask = (task) => {
-    setEditingTask(task);
-    setNewTask(task.title); // Hiển thị nội dung cũ trong input
-  };
-
-  /**
-   * Cập nhật task sau khi chỉnh sửa
-   */
+  // Cập nhật công việc
   const handleUpdateTask = async () => {
     if (!newTask.trim()) return;
 
@@ -91,85 +68,133 @@ function App() {
       const response = await fetch(`http://localhost:3001/todos/${editingTask.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...editingTask,
-          title: newTask
-        }),
+        body: JSON.stringify({ ...editingTask, title: newTask }),
       });
-
-      await response.json();
-      fetchTasks(); // Refresh danh sách
-      setNewTask(''); // Reset input
-      setEditingTask(null); // Thoát chế độ chỉnh sửa
+      if (!response.ok) throw new Error('Không thể cập nhật công việc');
+      const updatedTask = await response.json();
+      setTasks(tasks.map(task => (task.id === updatedTask.id ? updatedTask : task)));
+      setNewTask('');
+      setEditingTask(null);
+      setError(null);
     } catch (error) {
-      console.error('Lỗi khi cập nhật task:', error);
+      setError('Không thể cập nhật công việc. Vui lòng thử lại.');
     }
   };
 
-  // ========================
-  // SIDE EFFECTS
-  // ========================
+  // Đánh dấu công việc hoàn thành/chưa hoàn thành
+  const handleToggleComplete = async (task) => {
+    try {
+      const response = await fetch(`http://localhost:3001/todos/${task.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...task, completed: !task.completed }),
+      });
+      if (!response.ok) throw new Error('Không thể cập nhật trạng thái công việc');
+      const updatedTask = await response.json();
+      setTasks(tasks.map(t => (t.id === updatedTask.id ? updatedTask : t)));
+      setError(null);
+    } catch (error) {
+      setError('Không thể cập nhật trạng thái công việc. Vui lòng thử lại.');
+    }
+  };
+
   useEffect(() => {
-    fetchTasks(); // Load dữ liệu khi component mount
+    fetchTasks();
   }, []);
 
-  // ========================
-  // EVENT HANDLERS
-  // ========================
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       editingTask ? handleUpdateTask() : handleAddTask();
     }
   };
 
-  // ========================
-  // RENDER
-  // ========================
   return (
-    <div className="app">
-      <div className="todo-container">
-        <h1>Những Việc Cần Làm!</h1>
-
-        {/* Form thêm/cập nhật task */}
-        <div className="form-add-task">
-          <input
-            type="text"
-            placeholder="Nhiệm vụ hôm nay là gì?"
-            value={newTask}
-            onChange={(e) => setNewTask(e.target.value)}
-            onKeyDown={handleKeyDown} // Hỗ trợ nhấn Enter
-          />
-          <button onClick={editingTask ? handleUpdateTask : handleAddTask}>
-            {editingTask ? 'Update Task' : 'Thêm Task'}
+    <div className="todo-container">
+      <h1>Những Việc Cần Làm! 🚀</h1>
+      {error && <p className="error-message">{error}</p>}
+      <div className="form-add-task">
+        <input
+          type="text"
+          placeholder="Nhiệm vụ hôm nay là gì?"
+          value={newTask}
+          onChange={(e) => setNewTask(e.target.value)}
+          onKeyDown={handleKeyDown}
+        />
+        <button onClick={editingTask ? handleUpdateTask : handleAddTask}>
+          {editingTask ? 'Cập nhật' : 'Thêm mới'}
+        </button>
+        {editingTask && (
+          <button className="cancel-btn" onClick={() => { setEditingTask(null); setNewTask(''); }}>
+            Hủy
           </button>
-        </div>
-
-        {/* Danh sách tasks */}
-        <div className="task-list">
-          {tasks.map((task) => (
-            <div className="task-item" key={task.id}>
-              <span>{task.title}</span>
-              <div className="task-actions">
-                <button 
-                  className="edit-btn" 
-                  onClick={() => handleEditTask(task)}
-                  aria-label="Edit task"
-                >
-                  ✏️
-                </button>
-                <button
-                  className="delete-btn"
-                  onClick={() => handleDeleteTask(task.id)}
-                  aria-label="Delete task"
-                >
-                  🗑️
-                </button>
-              </div>
+        )}
+      </div>
+      <div className="task-list">
+        {tasks.map((task) => (
+          <div className={`task-item ${task.completed ? 'completed' : ''}`} key={task.id}>
+            <span onClick={() => handleToggleComplete(task)} style={{ cursor: 'pointer' }}>
+              {task.title}
+            </span>
+            <div className="task-actions">
+              <button
+                className="edit-btn"
+                onClick={() => {
+                  setEditingTask(task);
+                  setNewTask(task.title);
+                }}
+              >
+                ✏️
+              </button>
+              <button className="delete-btn" onClick={() => handleDeleteTask(task.id)}>
+                🗑️
+              </button>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </div>
+  );
+}
+
+// Component AboutPage: Trang giới thiệu
+function AboutPage() {
+  return (
+    <div className="about-container">
+      <h1>Giới thiệu 📝</h1>
+      <p>Ứng dụng quản lý công việc cá nhân với các tính năng cơ bản:</p>
+      <ul>
+        <li>Thêm công việc mới</li>
+        <li>Chỉnh sửa công việc</li>
+        <li>Xóa công việc</li>
+        <li>Đánh dấu công việc đã hoàn thành</li>
+        <li>Lưu trữ dữ liệu trên JSON Server</li>
+      </ul>
+    </div>
+  );
+}
+
+// Component Navigation: Thanh điều hướng
+function Navigation() {
+  return (
+    <nav className="main-nav">
+      <NavLink to="/" className="nav-link" activeClassName="active">🏠 Trang chủ</NavLink>
+      <NavLink to="/about" className="nav-link" activeClassName="active">ℹ️ Giới thiệu</NavLink>
+    </nav>
+  );
+}
+
+// Component App: Component chính của ứng dụng
+function App() {
+  return (
+    <Router>
+      <div className="app">
+        <Navigation />
+        <Routes>
+          <Route path="/" element={<TodoList />} />
+          <Route path="/about" element={<AboutPage />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

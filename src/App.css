@@ -1,35 +1,78 @@
 /* File: src/App.css */
+
+/* Reset và style cơ bản */
 body, html, #root {
-  height: 100%;
   margin: 0;
   font-family: 'Poppins', sans-serif;
-  background: #5784e2; /* Nền  xanh dương */
+  background: #5784e2;
+  min-height: 100vh;
 }
 
+/* Container chính */
 .app {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 20px;
 }
 
-.todo-container {
-  background: #16213E; /* Container tối xanh navy */
+/* Thanh điều hướng */
+.main-nav {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 30px;
+  justify-content: center;
+  padding: 15px;
+  background: rgba(22, 33, 62, 0.8);
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Liên kết trong thanh điều hướng */
+.nav-link {
+  color: #E6F1FF;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 12px 20px;
+  border-radius: 8px;
+  background: rgba(81, 173, 225, 0.1);
+  border: 1px solid rgba(81, 173, 225, 0.3);
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+  background: rgba(81, 173, 225, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(81, 173, 225, 0.3);
+}
+
+.nav-link.active {
+  background: #51ADE1;
+  color: #1A1A2E;
+  font-weight: 700;
+}
+
+/* Container cho TodoList và AboutPage */
+.todo-container, .about-container {
+  background: #16213E;
   padding: 30px;
   border-radius: 15px;
   width: 100%;
   max-width: 500px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(81, 173, 225, 0.1); /* Viền mờ màu chủ đạo */
+  border: 1px solid rgba(81, 173, 225, 0.1);
+  margin: 0 auto;
 }
 
-.todo-container:hover {
+.todo-container:hover, .about-container:hover {
   transform: scale(1.02);
   box-shadow: 0 10px 40px rgba(81, 173, 225, 0.2);
 }
 
-.todo-container h1 {
-  color: #E6F1FF; /* Chữ trắng xanh nhạt */
+/* Tiêu đề chính */
+.todo-container h1, .about-container h1 {
+  color: #E6F1FF;
   margin-bottom: 20px;
   font-size: 28px;
   font-weight: 700;
@@ -37,6 +80,24 @@ body, html, #root {
   letter-spacing: 1px;
 }
 
+/* Nội dung trang About */
+.about-container p {
+  color: #E6F1FF;
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+.about-container ul {
+  color: #E6F1FF;
+  padding-left: 20px;
+}
+
+.about-container li {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+/* Form thêm/sửa công việc */
 .form-add-task {
   display: flex;
   gap: 10px;
@@ -50,7 +111,7 @@ body, html, #root {
   border: none;
   font-size: 16px;
   transition: all 0.3s ease;
-  background: #0F3460; /* Ô input tối hơn container */
+  background: #0F3460;
   color: #E6F1FF;
 }
 
@@ -64,10 +125,10 @@ body, html, #root {
 }
 
 .form-add-task button {
-  background-color: #51ADE1; /* Giữ màu chủ đạo */
+  background-color: #51ADE1;
   border: none;
   padding: 0 25px;
-  color: #1A1A2E; /* Chữ tối để nổi bật */
+  color: #1A1A2E;
   border-radius: 10px;
   cursor: pointer;
   font-size: 16px;
@@ -80,29 +141,66 @@ body, html, #root {
   transform: translateY(-2px);
 }
 
+.form-add-task button.cancel-btn {
+  background-color: #FF5E5B;
+}
+
+.form-add-task button.cancel-btn:hover {
+  background-color: #E04E4B;
+}
+
+/* Danh sách công việc */
 .task-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 5px;
 }
 
+.task-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.task-list::-webkit-scrollbar-track {
+  background: #0F3460;
+  border-radius: 10px;
+}
+
+.task-list::-webkit-scrollbar-thumb {
+  background: #51ADE1;
+  border-radius: 10px;
+}
+
+.task-list::-webkit-scrollbar-thumb:hover {
+  background: #3A8BC8;
+}
+
+/* Mỗi công việc */
 .task-item {
-  background: #0F3460; /* Nền task tối */
+  background: #0F3460;
   color: #E6F1FF;
   padding: 16px 20px;
   border-radius: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-left: 4px solid #51ADE1; /* Thanh accent màu chủ đạo */
+  border-left: 4px solid #51ADE1;
   transition: all 0.2s ease;
 }
 
 .task-item:hover {
   transform: translateX(5px);
-  background: #1A3A6E; /* Màu hover tối hơn */
+  background: #1A3A6E;
 }
 
+.task-item.completed span {
+  text-decoration: line-through;
+  color: #7F8C8D;
+}
+
+/* Nút hành động (Chỉnh sửa, Xóa) */
 .task-actions {
   display: flex;
   gap: 8px;
@@ -130,17 +228,48 @@ body, html, #root {
 }
 
 .edit-btn:hover {
-  color: #2ECC71 !important; /* Xanh lá neon */
+  color: #2ECC71 !important;
 }
 
 .delete-btn:hover {
-  color: #FF5E5B !important; /* Đỏ cam tươi */
+  color: #FF5E5B !important;
+}
+
+/* Thông báo lỗi */
+.error-message {
+  color: #FF5E5B;
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 14px;
 }
 
 /* Responsive */
 @media (max-width: 600px) {
-  .todo-container {
+  .todo-container, .about-container {
     padding: 20px;
     margin: 0 15px;
+  }
+
+  .form-add-task {
+    flex-direction: column;
+  }
+
+  .form-add-task input, .form-add-task button {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .form-add-task button {
+    padding: 14px 0;
+  }
+
+  .main-nav {
+    gap: 15px;
+    padding: 10px;
+  }
+
+  .nav-link {
+    font-size: 16px;
+    padding: 10px 15px;
   }
 }
